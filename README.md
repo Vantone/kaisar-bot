@@ -54,12 +54,13 @@ Transform your compute power into real earnings
    ```bash
    npm run start
    ```
-6.1. docker images
+##  RUN WITH DOCKER
+1. docker images
    ```bash
    docker pull docker.dadunode.com/node:20-alpine
    ```
-6.2. Run with docker 
+   
+2. Run with docker 
   ```bash
-  mv kaisar-bot  /opt
   docker run -itd --name kaisar  -v /opt/kaisar-bot:/data -w /data node:20-alpine sh -c 'npm install  && npm run start'
   ```
