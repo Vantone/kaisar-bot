@@ -42,9 +42,9 @@ Transform your compute power into real earnings
    ```bash
    npm install
    ```
-3. Register or Login to get Access Token
+3. Login to get Access Token
    ```bash
-   npm run register
+   npm run login
    ```
 4. Create Extension ID for new account
    ```bash
