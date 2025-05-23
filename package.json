@@ -6,6 +6,7 @@
   "devDependencies": {},
   "scripts": {
     "login": "node login.js",
+    "id": "node id.js",
     "start": "node main.js",
     "register": "node register.js",
     "setup": "node setup.js",
@@ -33,6 +34,7 @@
     "chalk": "^5.3.0",
     "crypto": "^1.0.1",
     "fs": "^0.0.1-security",
-    "https-proxy-agent": "^7.0.5"
+    "https-proxy-agent": "^7.0.5",
+    "uuid": "^11.1.0"
   }
 }
