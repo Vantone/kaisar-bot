@@ -48,9 +48,18 @@ Transform your compute power into real earnings
    ```
 4. Create Extension ID for new account
    ```bash
-   npm run setup
+   npm run id
    ```
 5. Run the bot:
    ```bash
    npm run start
    ```
+6.1. docker images
+   ```bash
+   docker pull docker.dadunode.com/node:20-alpine
+   ```
+6.2. Run with docker 
+  ```bash
+  mv kaisar-bot  /opt
+  docker run -itd --name kaisar  -v /opt/kaisar-bot:/data -w /data node:20-alpine sh -c 'npm install  && npm run start'
+  ```
