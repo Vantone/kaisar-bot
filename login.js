@@ -2,7 +2,7 @@
 import { axios, fs } from './utils/exporter.js';
 
 // 最大并发线程数，可根据需要修改
-const maxConcurrency = 20; // 例如设置为5线程并发
+const maxConcurrency = 5; // 例如设置为5线程并发
 
 function saveTokensToFile(tokens) {
     try {
