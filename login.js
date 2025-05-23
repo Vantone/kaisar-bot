@@ -1,17 +1,18 @@
-// 批量登录脚本：读取emails.txt，格式为email----password，批量登录并生成token到tokens.txt
+// 支持自定义最大并发线程数的批量登录脚本：读取emails.txt，格式为email----password，并发登录后按顺序写入token到tokens.txt
 import { axios, fs } from './utils/exporter.js';
 
-// 保存token到tokens.txt文件
-function saveTokenToFile(token) {
+// 最大并发线程数，可根据需要修改
+const maxConcurrency = 20; // 例如设置为5线程并发
+
+function saveTokensToFile(tokens) {
     try {
-        fs.appendFileSync('tokens.txt', token + '\n');
-        console.log('Access token saved to tokens.txt');
+        fs.writeFileSync('tokens.txt', tokens.join('\n') + '\n');
+        console.log('All access tokens saved to tokens.txt');
     } catch (error) {
-        console.error("Error saving token to file:", error.message);
+        console.error("Error saving tokens to file:", error.message);
     }
 }
 
-// 登录用户，获取token并保存
 async function loginUser(email, password) {
     try {
         const response = await axios.post(
@@ -22,33 +23,50 @@ async function loginUser(email, password) {
         if (response.data && response.data.data && response.data.data.accessToken) {
             const token = response.data.data.accessToken;
             console.log(`Login successful for ${email} Token:`, token);
-            saveTokenToFile(token);
+            return token;
         } else {
             console.error(`Login failed for ${email}:`, response.data.message);
+            return '';
         }
     } catch (error) {
         console.error(`Error during login for ${email}:`, error.message);
+        return '';
     }
 }
 
-// 处理所有用户邮箱，批量登录
+// 控制并发批量处理
 async function processAllUsers() {
     try {
-        // 读取emails.txt中的所有账号和密码，格式为email----password
         const lines = fs.readFileSync('emails.txt', 'utf-8').split('\n').filter(line => line.trim() !== '');
-        for (const line of lines) {
-            const [email, password] = line.split('----');
-            if (email && password) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                await loginUser(email.trim(), password.trim());
-            } else {
-                console.error(`Invalid line format: ${line}`);
+        const tokens = new Array(lines.length).fill('');
+        let current = 0;
+        async function worker() {
+            while (true) {
+                let idx;
+                // 线程安全地获取下一个索引
+                if (current >= lines.length) return;
+                idx = current;
+                current++;
+                const line = lines[idx];
+                const [email, password] = line.split('----');
+                if (email && password) {
+                    tokens[idx] = await loginUser(email.trim(), password.trim());
+                } else {
+                    console.error(`Invalid line format: ${line}`);
+                    tokens[idx] = '';
+                }
             }
         }
+        // 启动 maxConcurrency 个 worker
+        const workers = [];
+        for (let i = 0; i < maxConcurrency; i++) {
+            workers.push(worker());
+        }
+        await Promise.all(workers);
+        saveTokensToFile(tokens);
     } catch (error) {
         console.error("Error reading emails.txt file:", error.message);
     }
 }
 
-// 主入口，执行批量处理
 processAllUsers();
