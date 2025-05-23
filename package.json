@@ -5,6 +5,7 @@
   "main": "main.js",
   "devDependencies": {},
   "scripts": {
+    "login": "node login.js",
     "start": "node main.js",
     "register": "node register.js",
     "setup": "node setup.js",
